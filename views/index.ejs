@@ -7,6 +7,13 @@
   </head>
   <body>
     <h1>File Uploader and Share System</h1>
+    <% if(!locals.user){ %>
     <a href="/signUp">Sign Up</a>
+    <br />
+    <a href="/logIn">Log In</a>
+    <% } else{ %>
+    <div>Welcome <%= user.fullName %></div>
+    <a href="/logOut">Log Out</a>
+    <% } %>
   </body>
 </html>

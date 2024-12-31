@@ -10,13 +10,15 @@ const validateUser = [
     .isAlpha()
     .withMessage("Only alphabetic characters")
     .isLength({ min: 5, max: 40 })
-    .withMessage("Name less than 40 characters"),
+    .withMessage("Name less than 40 characters and greater than 5 characters"),
   body("username")
     .trim()
     .isEmail()
     .withMessage("Enter a valid email address")
     .custom(async (value) => {
       const existingUser = await prismaClientQueries.findByUsername(value);
+      const trial = await prismaClientQueries.sessionList();
+      console.log(existingUser, trial);
       if (existingUser && existingUser.username == value) {
         throw new Error("A user already exists with this username");
       }
@@ -39,14 +41,14 @@ const validateUser = [
 ];
 
 exports.getIndexPage = (req, res) => {
-  res.render("index");
+  res.render("index", { user: req.user });
 };
 
 exports.getSignUpPage = (req, res) => {
   res.render("signUp");
 };
 
-exports.postSignUp = (req, res) => [
+exports.postSignUp = [
   // lot of things to do
   // express-validator
   // prisma instead of direct postgresql db
@@ -78,6 +80,24 @@ exports.postSignUp = (req, res) => [
     });
 
     // after uploading username and hashed password to our db through prisma, render back to index page
-    res.render("index");
+    res.redirect("/");
   },
 ];
+
+exports.getLogIn = (req, res) => {
+  res.render("logIn");
+};
+
+exports.postLogIn = passport.authenticate("local", {
+  successRedirect: "/",
+  failureRedirect: "/logIn",
+});
+
+exports.getLogout = (req, res, next) => {
+  req.logout((err) => {
+    if (err) {
+      return next(err);
+    }
+    res.redirect("/");
+  });
+};

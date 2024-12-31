@@ -24,8 +24,8 @@ const assetsPath = path.join(__dirname, "public");
 app.use(express.static(assetsPath));
 
 // for html views
-app.use("views", path.join(__dirname, "views"));
-app.use("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "ejs");
 
 // for req.body parameters
 app.use(express.urlencoded({ extended: true }));
@@ -95,4 +95,6 @@ app.use((err, req, res, next) => {
   res.status(500).send(err);
 });
 
-app.listen(port, () => console.log(`Started listening on port ${port}`));
+app.listen(port, () => {
+  console.log(`Started listening on port ${port}`);
+});
