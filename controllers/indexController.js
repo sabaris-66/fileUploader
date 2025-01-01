@@ -17,8 +17,6 @@ const validateUser = [
     .withMessage("Enter a valid email address")
     .custom(async (value) => {
       const existingUser = await prismaClientQueries.findByUsername(value);
-      const trial = await prismaClientQueries.sessionList();
-      console.log(existingUser, trial);
       if (existingUser && existingUser.username == value) {
         throw new Error("A user already exists with this username");
       }
@@ -40,8 +38,39 @@ const validateUser = [
   }),
 ];
 
-exports.getIndexPage = (req, res) => {
-  res.render("index", { user: req.user });
+const validateFolder = [
+  body("folderName")
+    .trim()
+    .isString()
+    .withMessage("Only Alphabetic Characters")
+    .isLength({ min: 1, max: 30 })
+    .custom(async (value) => {
+      const existingFolder = await prismaClientQueries.findByFolderName(value);
+      if (existingFolder) {
+        throw new Error("A folder with this name already exists");
+      }
+    }),
+];
+
+const validateUpdatedFolder = [
+  body("updatedName")
+    .trim()
+    .isString()
+    .withMessage("Only Alphabetic Characters")
+    .isLength({ min: 1, max: 30 })
+    .custom(async (value) => {
+      const existingFolder = await prismaClientQueries.findByFolderName(value);
+      if (existingFolder) {
+        throw new Error("A folder with this name already exists");
+      }
+    }),
+];
+
+exports.getIndexPage = async (req, res) => {
+  const folders = await prismaClientQueries.getFolders();
+  const files = await prismaClientQueries.getFiles();
+  console.log(files);
+  res.render("index", { user: req.user, folders, files });
 };
 
 exports.getSignUpPage = (req, res) => {
@@ -100,4 +129,59 @@ exports.getLogout = (req, res, next) => {
     }
     res.redirect("/");
   });
+};
+
+exports.getAddFiles = (req, res) => {
+  res.render("addFile", { folderName: req.query.folderName });
+};
+
+exports.getFolder = (req, res) => {
+  res.render("createFolder");
+};
+
+exports.postFolder = [
+  validateFolder,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render("createFolder", { errors: errors.array() });
+    }
+    await prismaClientQueries.createFolder(req.body.folderName);
+    res.redirect("/");
+  },
+];
+
+exports.getFolderContents = async (req, res) => {
+  const folderContents = await prismaClientQueries.getFiles(
+    req.query.folderName
+  );
+  res.render("folderContent", {
+    folderContents,
+    folderName: req.query.folderName,
+  });
+};
+
+exports.getUpdateFolder = (req, res) => {
+  console.log("blah", req.query.folderName);
+  res.render("updateFolder", { folderName: req.query.folderName });
+};
+
+exports.postUpdateFolder = [
+  validateUpdatedFolder,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).render("updateFolder", { errors: errors.array() });
+    }
+    await prismaClientQueries.updateFolder(
+      req.query.folderName,
+      req.body.updatedName
+    );
+    res.redirect("/");
+  },
+];
+
+exports.postDeleteFolder = async (req, res) => {
+  await prismaClientQueries.deleteFolder(req.query.folderName);
+  res.redirect("/");
 };

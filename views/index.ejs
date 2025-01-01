@@ -13,7 +13,38 @@
     <a href="/logIn">Log In</a>
     <% } else{ %>
     <div>Welcome <%= user.fullName %></div>
+    <br />
+    <a href="/files">Add Files</a>
+    <br />
+    <a href="/folder">Create New Folder</a>
+    <br />
     <a href="/logOut">Log Out</a>
-    <% } %>
+    <% if(locals.files){ %>
+    <br />
+    <div>Files:</div>
+    <br />
+    <% files.map(file => { %>
+    <div><%= file.originalname %> - <%= file.date %> - <%= file.size %></div>
+    <% }) %> <% } %> <% if(locals.folders){ %>
+    <br />
+    <div>Folders:</div>
+    <br />
+    <ul>
+      <% folders.map((folder) => { %>
+      <a href="/insideFolder?folderName=<%= folder.folderName %>"
+        ><li><%= folder.folderName %></li></a
+      >
+      <a href="/updateFolder?folderName=<%= folder.folderName %>">
+        <button>Update Folder Name</button>
+      </a>
+      <form
+        action="/deleteFolder?folderName=<%= folder.folderName %>"
+        method="post"
+      >
+        <button type="submit">Delete Folder</button>
+      </form>
+      <% }) %>
+    </ul>
+    <% } %> <% } %>
   </body>
 </html>

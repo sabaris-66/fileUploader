@@ -16,6 +16,10 @@ const indexRouter = require("./routes/indexRouter");
 // using prisma queries instead
 const prismaClientQueries = require("./prisma/prismaClient");
 
+// multer for file storage
+const multer = require("multer");
+const upload = multer({ dest: "./uploads" });
+
 // app express
 const app = express();
 
@@ -84,6 +88,15 @@ passport.deserializeUser(async (username, done) => {
   } catch (err) {
     done(err);
   }
+});
+
+// for multer storage
+app.post("/files", upload.single("uploaded_file"), async function (req, res) {
+  // req.file is the name of your file in the form above, here 'uploaded_file'
+  // req.body will hold the text fields, if there were any
+  await prismaClientQueries.addFileInfo(req.file, req.query.folderName);
+  console.log(req.file);
+  res.redirect("/");
 });
 
 // router use

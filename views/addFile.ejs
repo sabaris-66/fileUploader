@@ -6,6 +6,21 @@
     <title>Add File</title>
   </head>
   <body>
-    <input type="file" />
+    <form
+      action="/files?folderName=<%= folderName %>"
+      enctype="multipart/form-data"
+      method="post"
+    >
+      <div class="form-group">
+        <input type="file" class="form-control-file" name="uploaded_file" />
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Extra Info"
+          name="extraInfo"
+        />
+        <input type="submit" value="Upload" class="btn btn-default" />
+      </div>
+    </form>
   </body>
 </html>

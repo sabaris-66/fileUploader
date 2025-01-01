@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Folder Content</title>
+  </head>
+  <body>
+    <h1><%= folderName %> Folder Contents</h1>
+    <br />
+    <a href="/files?folderName=<%= folderName %>">Add Files</a>
+    <br />
+    <% if(locals.folderContents){ %>
+    <ul>
+      <% folderContents.map(content => { %>
+      <li>
+        <%= content.originalname %> <%= content.date %> <%= content.size %>
+      </li>
+      <% }) %>
+    </ul>
+    <% } %>
+  </body>
+</html>

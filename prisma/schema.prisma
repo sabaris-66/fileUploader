@@ -26,3 +26,22 @@ model User {
   fullName String
   password String
 }
+
+model Folder {
+  id         Int    @id @default(autoincrement())
+  folderName String @unique
+}
+
+model File {
+  id           Int      @id @default(autoincrement())
+  date         DateTime @default(now())
+  fieldname    String
+  originalname String
+  encoding     String
+  mimetype     String
+  destination  String
+  filename     String
+  path         String
+  size         Int
+  folder       String?
+}
