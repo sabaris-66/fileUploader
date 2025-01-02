@@ -15,6 +15,9 @@
       <% folderContents.map(content => { %>
       <li>
         <%= content.originalname %> <%= content.date %> <%= content.size %>
+        <form action="/download?path=<%= content.path %>" method="post">
+          <button type="submit">Download</button>
+        </form>
       </li>
       <% }) %>
     </ul>

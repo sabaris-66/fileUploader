@@ -20,6 +20,15 @@ const prismaClientQueries = require("./prisma/prismaClient");
 const multer = require("multer");
 const upload = multer({ dest: "./uploads" });
 
+// node.js fs for file downloads
+const fs = require("fs");
+const http = require("http");
+
+// cloudinary
+// const { resolve } = require("path");
+// const { uploader, cloudinaryConfig } = require("./cloudinaryConfig");
+// const { multerUploads, dataUri } = require("./multer");
+
 // app express
 const app = express();
 
@@ -32,7 +41,7 @@ app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
 // for req.body parameters
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 // express prisma session store
 app.use(
@@ -98,6 +107,42 @@ app.post("/files", upload.single("uploaded_file"), async function (req, res) {
   console.log(req.file);
   res.redirect("/");
 });
+
+// download files using node.js
+
+app.post("/download", (req, res, next) => {
+  console.log("fileController.download: started");
+  const path = req.query.path;
+  const file = fs.createReadStream(path);
+  const filename = new Date().toISOString();
+  res.setHeader(
+    "Content-Disposition",
+    'attachment: filename="' + filename + '"'
+  );
+  file.pipe(res);
+});
+
+// using online documentation
+// ----------------------------------------------------------------
+// app.use("*", cloudinaryConfig);
+
+// app.post("/files", multerUploads, async (req, res) => {
+//   if (req.file) {
+//     const file = dataUri(req).content;
+//     return uploader
+//       .upload(file)
+//       .then(async (result) => {
+//         const image = result.url;
+//         await prismaClientQueries.addFileInfo(req.file, req.query.folderName);
+//         res.redirect("/");
+//       })
+//       .catch((err) => {
+//         throw new Error("Something went wrong while processing your request");
+//       });
+//   }
+// });
+
+// ----------------------------------------------------------------
 
 // router use
 app.use("/", indexRouter);

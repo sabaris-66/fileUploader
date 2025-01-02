@@ -102,6 +102,8 @@ exports.getFiles = async (folder) => {
 };
 
 async function main() {
+  const find = await prisma.file.findMany();
+  console.log(find[0]);
   // await prisma.file.deleteMany();
   // await prisma.user.createMany({
   //   data: [

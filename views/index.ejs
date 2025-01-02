@@ -25,6 +25,9 @@
     <br />
     <% files.map(file => { %>
     <div><%= file.originalname %> - <%= file.date %> - <%= file.size %></div>
+    <form action="/download?path=<%= file.path %>" method="post">
+      <button type="submit">Download</button>
+    </form>
     <% }) %> <% } %> <% if(locals.folders){ %>
     <br />
     <div>Folders:</div>
